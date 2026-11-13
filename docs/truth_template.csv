@@ -1,0 +1,4 @@
+ts,zone,count
+60,billing_queue,4
+120,billing_queue,7
+180,billing_queue,12

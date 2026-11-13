@@ -1,0 +1,49 @@
+# Example: one camera over a food-court billing counter in a mall.
+# Coordinates are pixels in a 1280x720 reference frame. Frames are resized to this before analysis,
+# so the polygons below always line up. Roughly 100 px = 1 m in this example.
+
+site: "Demo Mall - Food Court"
+camera: "fc-counter-1"
+frame: { width: 1280, height: 720 }
+
+model: yolov8n.pt          # try yolov8s.pt / yolov8m.pt for crowded scenes (slower, more accurate)
+conf: 0.35
+imgsz: 960
+tracker: bytetrack.yaml
+snapshot_interval_s: 5
+
+zones:
+  - name: billing_queue
+    polygon: [[400, 150], [800, 150], [800, 450], [400, 450]]
+    area_m2: 12.0            # MEASURE THIS on site: it makes density real instead of decorative
+    capacity: 40
+  - name: food_court_floor
+    polygon: [[0, 450], [1280, 450], [1280, 720], [0, 720]]
+    area_m2: 34.5
+    capacity: 120
+
+lines:
+  - name: entrance
+    a: [0, 700]
+    b: [1280, 700]
+    in_direction: [0, -1]    # walking UP the image = entering
+  - name: service_line       # crossing this means "reached the counter / was served"
+    a: [400, 150]
+    b: [800, 150]
+    in_direction: [0, -1]
+
+queues:
+  - zone: billing_queue
+    service_line: service_line
+    window_s: 300            # service rate is measured over the last 5 minutes
+    stall_s: 120
+
+alerts:
+  density_warn_los: E        # < 0.3 m2 per person
+  density_critical_los: F    # < 0.2 m2 per person (about 5 people/m2): crush risk
+  wait_warn_min: 10
+  wait_critical_min: 20
+  capacity_warn_ratio: 0.8
+  sustain_s: 10
+  clear_s: 30
+  # webhook_url: "https://hooks.slack.com/services/XXX"   # optional Slack/Teams alerts

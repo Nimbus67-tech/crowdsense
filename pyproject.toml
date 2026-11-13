@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crowdsense"
+version = "0.1.0"
+description = "Early warning for crowd-crush risk and queue delays from ordinary CCTV"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Yogesh Kumar Mourya" }]
+keywords = ["computer-vision", "crowd-analytics", "queue-management", "yolo", "public-safety"]
+dependencies = ["numpy>=1.23", "pyyaml>=6.0"]
+
+[project.optional-dependencies]
+vision = ["ultralytics>=8.2", "opencv-python>=4.8"]
+dashboard = ["streamlit>=1.50", "pandas>=2.0", "matplotlib>=3.7"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+crowdsense = "crowdsense.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["crowdsense*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
